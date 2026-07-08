@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kevin Kaniaru — Code Cockroaches</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Karla:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --board:     #1C2B28;
+      --board2:    #243330;
+      --board3:    #2D3E3A;
+      --chalk:     rgba(245,239,224,0.90);
+      --chalk-dim: rgba(245,239,224,0.40);
+      --chalk-faint: rgba(245,239,224,0.18);
+      --card:      #F5EFE0;
+      --card2:     #EDE5CE;
+      --card-ink:  #2A1F14;
+      --card-ink2: #5C4A35;
+      --card-ink3: #9C8068;
+      --k1: #F4C842;   /* yellow chalk — Kevin's colour on the team board */
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Karla', system-ui, sans-serif;
+      background: var(--board);
+      color: var(--chalk);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.015) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(255,255,255,0.010) 0%, transparent 50%),
+        repeating-linear-gradient(
+          0deg, transparent, transparent 3px,
+          rgba(255,255,255,0.006) 3px, rgba(255,255,255,0.006) 4px
+        );
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      box-shadow:
+        inset 0 0 0 14px #5C3D1E,
+        inset 0 0 0 16px #7A5230,
+        inset 0 0 0 18px #4A3018,
+        inset 18px 18px 60px rgba(0,0,0,0.5),
+        inset -18px -18px 60px rgba(0,0,0,0.35);
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: 18px; left: 18px; right: 18px;
+      height: 3px;
+      background: rgba(245,239,224,0.12);
+      box-shadow: 0 2px 0 rgba(245,239,224,0.06), 0 -1px 0 rgba(0,0,0,0.3);
+      z-index: 201;
+    }
+
+    .board-wrap {
+      position: relative;
+      z-index: 5;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 52px 40px 72px;
+    }
+
+    .board-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--chalk-faint);
+    }
+
+    .prog-label {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 14px;
+      color: var(--chalk-dim);
+      letter-spacing: 0.5px;
+    }
+
+    .header-link {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 13px;
+      color: var(--chalk-dim);
+      text-decoration: none;
+    }
+    .header-link:hover { color: var(--chalk); }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 40px 20px 30px;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(440px, 90%);
+      height: 170px;
+      border: 2px solid var(--chalk-faint);
+      border-radius: 50%;
+    }
+
+    .hero-kicker {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 13px;
+      color: var(--chalk-dim);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      position: relative; z-index: 2;
+    }
+
+    .hero-name {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(48px, 10vw, 88px);
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1.0;
+      position: relative; z-index: 2;
+      text-shadow: 0 0 30px rgba(255,255,255,0.15), 1px 1px 0 rgba(255,255,255,0.04);
+      margin-bottom: 6px;
+    }
+
+    .hero-role {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 15px;
+      color: var(--k1);
+      position: relative; z-index: 2;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin: 24px 0 48px;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 14px;
+      color: var(--chalk-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--chalk-dim);
+      flex-shrink: 0;
+    }
+
+    .section-label-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .section-label {
+      font-family: 'Caveat', cursive;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--chalk);
+      white-space: nowrap;
+    }
+
+    .section-rule {
+      flex: 1;
+      height: 1.5px;
+      background: repeating-linear-gradient(
+        90deg, var(--chalk-faint) 0px, var(--chalk-faint) 8px,
+        transparent 8px, transparent 14px
+      );
+    }
+
+    section { margin-bottom: 52px; }
+
+    /* Bio card — same index-card look as team page */
+    .card {
+      background: var(--card);
+      position: relative;
+      padding: 30px 26px 24px;
+      transform: rotate(-0.6deg);
+      box-shadow: 2px 3px 12px rgba(0,0,0,0.35), 4px 6px 24px rgba(0,0,0,0.20);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -9px; left: 50%;
+      transform: translateX(-50%);
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--k1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 -2px 4px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.4);
+    }
+
+    .card-stripe {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--k1);
+    }
+
+    .card-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom, transparent, transparent 27px,
+        rgba(0,0,0,0.06) 27px, rgba(0,0,0,0.06) 28px
+      );
+      background-position: 0 40px;
+    }
+
+    .card-margin {
+      position: absolute;
+      top: 0; bottom: 0; left: 36px;
+      width: 1px;
+      background: rgba(220,80,80,0.25);
+    }
+
+    .card-content { position: relative; z-index: 2; }
+
+    .bio-text {
+      font-family: 'Karla', sans-serif;
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--card-ink2);
+      max-width: 62ch;
+    }
+    .bio-text + .bio-text { margin-top: 14px; }
+
+    /* Skills — chalk tags on the board itself */
+    .tag-group { margin-bottom: 22px; }
+
+    .tag-group-label {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 13px;
+      color: var(--chalk-dim);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 13px;
+      color: var(--chalk);
+      border: 1.5px solid var(--chalk-faint);
+      padding: 5px 13px;
+      border-radius: 3px;
+      background: rgba(245,239,224,0.03);
+    }
+
+    /* Project cards */
+    .proj-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .proj-card {
+      background: var(--card);
+      position: relative;
+      padding: 26px 22px 20px;
+      box-shadow: 2px 3px 12px rgba(0,0,0,0.35), 4px 6px 24px rgba(0,0,0,0.20);
+    }
+    .proj-card:nth-child(1) { transform: rotate(-1deg); }
+    .proj-card:nth-child(2) { transform: rotate(0.7deg); }
+
+    .proj-card::before {
+      content: '';
+      position: absolute;
+      top: -9px; left: 50%;
+      transform: translateX(-50%);
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--k1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 -2px 4px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.4);
+    }
+
+    .proj-title {
+      font-family: 'Caveat', cursive;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--card-ink);
+      margin-bottom: 6px;
+      position: relative; z-index: 2;
+    }
+
+    .proj-desc {
+      font-family: 'Karla', sans-serif;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--card-ink2);
+      margin-bottom: 14px;
+      position: relative; z-index: 2;
+    }
+
+    .proj-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      position: relative; z-index: 2;
+    }
+
+    .proj-tag {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 11px;
+      color: var(--card-ink2);
+      background: var(--card2);
+      border: 1px solid rgba(0,0,0,0.10);
+      padding: 2px 9px;
+      border-radius: 2px;
+    }
+
+    /* Footer */
+    .board-footer {
+      margin-top: 60px;
+      padding-top: 16px;
+      border-top: 1.5px solid var(--chalk-faint);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .footer-copy {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 13px;
+      color: var(--chalk-dim);
+    }
+
+    .footer-back {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 13px;
+      color: var(--chalk-dim);
+      text-decoration: none;
+    }
+    .footer-back:hover { color: var(--chalk); }
+
+    @media (max-width: 600px) {
+      .board-wrap { padding: 40px 24px 60px; }
+      .hero::before { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="board-wrap">
+
+  <header class="board-header">
+    <span class="prog-label">ICS 4 Capstone · Strathmore University · 2027</span>
+    <a href="../index.html" class="header-link">← Back to team</a>
+  </header>
+
+  <div class="hero">
+    <p class="hero-kicker">✦ About Me ✦</p>
+    <h1 class="hero-name">Kevin Kaniaru</h1>
+    <p class="hero-role">Software Engineer · Full-Stack &amp; AI/RAG</p>
+  </div>
+
+  <div class="meta-row">
+    <span class="meta-item"><span class="meta-dot"></span> Nairobi, Kenya</span>
+    <span class="meta-item"><span class="meta-dot"></span> BSc Computer Science, Strathmore</span>
+    <span class="meta-item"><span class="meta-dot"></span> Class of 2027</span>
+  </div>
+
+  <!-- Bio -->
+  <section>
+    <div class="section-label-row">
+      <span class="section-label">A bit about me —</span>
+      <div class="section-rule"></div>
+    </div>
+    <div class="card">
+      <div class="card-stripe"></div><div class="card-lines"></div><div class="card-margin"></div>
+      <div class="card-content">
+        <p class="bio-text">I'm a final-year Computer Science student at Strathmore University, and a Software Engineer at Snapp Africa, where I work across full-stack platform development, research data pipelines, and AI/RAG systems.</p>
+        <p class="bio-text">I like building things end to end, from backend APIs to the models that sit on top of them. Outside of code, I help out with my church community, including putting together slide decks for youth presentations.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section>
+    <div class="section-label-row">
+      <span class="section-label">Skills —</span>
+      <div class="section-rule"></div>
+    </div>
+    <div class="tag-group">
+      <span class="tag-group-label">Languages &amp; frameworks</span>
+      <div class="tags">
+        <span class="tag">Python</span>
+        <span class="tag">Flutter</span>
+        <span class="tag">FastAPI</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">TensorFlow / Keras</span>
+      </div>
+    </div>
+    <div class="tag-group">
+      <span class="tag-group-label">Systems &amp; data</span>
+      <div class="tags">
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">Distributed Systems</span>
+        <span class="tag">Cloud Computing</span>
+        <span class="tag">AI / RAG</span>
+        <span class="tag">Machine Learning</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section>
+    <div class="section-label-row">
+      <span class="section-label">Projects —</span>
+      <div class="section-rule"></div>
+    </div>
+    <div class="proj-grid">
+      <div class="proj-card">
+        <p class="proj-title">Household Budget Advisor</p>
+        <p class="proj-desc">ICS Project II capstone: a personalised affordability and budget recommendation system for Kenyan households, combining HMM, LSTM, and Random Forest models behind a Flutter app.</p>
+        <div class="proj-tags">
+          <span class="proj-tag">Flutter</span>
+          <span class="proj-tag">FastAPI</span>
+          <span class="proj-tag">PostgreSQL</span>
+          <span class="proj-tag">ML</span>
+        </div>
+      </div>
+      <div class="proj-card">
+        <p class="proj-title">VermIoT</p>
+        <p class="proj-desc">Group IoT project exploring sensing and monitoring, with contributions spanning system design and presentation materials.</p>
+        <div class="proj-tags">
+          <span class="proj-tag">IoT</span>
+          <span class="proj-tag">Embedded Systems</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section>
+    <div class="section-label-row">
+      <span class="section-label">Find me —</span>
+      <div class="section-rule"></div>
+    </div>
+    <div class="tags">
+      <a href="[Your LinkedIn URL]" target="_blank" rel="noopener" class="tag" style="text-decoration:none;">LinkedIn ↗</a>
+      <a href="https://github.com/[your-username]" target="_blank" rel="noopener" class="tag" style="text-decoration:none;">GitHub ↗</a>
+    </div>
+  </section>
+
+  <footer class="board-footer">
+    <span class="footer-copy">ICS 4 Capstone · Strathmore University · Nairobi 2025</span>
+    <a href="../index.html" class="footer-back">← Back to team</a>
+  </footer>
+
+</div>
+
+</body>
+</html>
